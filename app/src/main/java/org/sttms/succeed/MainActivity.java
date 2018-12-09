@@ -1,6 +1,9 @@
 package org.sttms.succeed;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button tutorButton, tuteeButton;
     private DatabaseReference mReferenceTutors, mReferenceTutees;
+//    private SharedPreferences sharedPreferences;
+//    private String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,17 +35,22 @@ public class MainActivity extends AppCompatActivity {
         mReferenceTutees.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    for (DataSnapshot d : dataSnapshot.getChildren()) {
-                        if (d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            Intent intent = new Intent(MainActivity.this, TutorLogIn.class);
-                            intent.putExtra("Role", "Tutee");
-                            intent.putExtra("First", (String) d.child("First").getValue());
-                            intent.putExtra("Last", (String) d.child("Last").getValue());
-                            startActivity(intent);
-                            finish();
+//                sharedPreferences = MainActivity.this.getSharedPreferences("status", Context.MODE_PRIVATE);
+//                status = sharedPreferences.getString("status", "null");
+//                Log.d("SHAREDPREF", status);
+//                if(status.equals("loggedin")) {
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                        for (DataSnapshot d : dataSnapshot.getChildren()) {
+                            if (d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                Intent intent = new Intent(MainActivity.this, TuteeLogIn.class);
+                                intent.putExtra("Role", "Tutee");
+                                intent.putExtra("First", (String) d.child("First").getValue());
+                                intent.putExtra("Last", (String) d.child("Last").getValue());
+                                startActivity(intent);
+                                finish();
+                            }
                         }
-                    }
+//                    }
                 }
             }
             @Override
@@ -52,18 +62,21 @@ public class MainActivity extends AppCompatActivity {
         mReferenceTutors.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    for (DataSnapshot d : dataSnapshot.getChildren()) {
-                        if (d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            Intent intent = new Intent(MainActivity.this, TutorLogIn.class);
-                            intent.putExtra("Role", "Tutor");
-                            intent.putExtra("First", (String) d.child("First").getValue());
-                            intent.putExtra("Last", (String) d.child("Last").getValue());
-                            startActivity(intent);
-                            finish();
+//                sharedPreferences = MainActivity.this.getSharedPreferences("status", Context.MODE_PRIVATE);
+//                status = sharedPreferences.getString("status", "null");
+//                if(status.equals("loggedin")) {
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                        for (DataSnapshot d : dataSnapshot.getChildren()) {
+                            if (d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                Intent intent = new Intent(MainActivity.this, TutorLogIn.class);
+                                intent.putExtra("Role", "Tutor");
+                                intent.putExtra("First", (String) d.child("First").getValue());
+                                intent.putExtra("Last", (String) d.child("Last").getValue());
+                                startActivity(intent);
+                                finish();
+                            }
                         }
-
-                    }
+//                    }
                 }
             }
             @Override

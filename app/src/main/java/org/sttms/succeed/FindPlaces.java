@@ -1,5 +1,6 @@
 package org.sttms.succeed;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -28,7 +29,7 @@ public class FindPlaces extends AppCompatActivity {
     private SharedPreferences prefs = null;
 
     public void check() {
-        if (prefs.getBoolean("firstrun", true) || true) {
+        if (prefs.getBoolean("firstrun", true)) {
             Intent i = new Intent(FindPlaces.this, ChooseSubjects.class);
             i.putExtra("Role", role);
             i.putExtra("First", fName);
@@ -59,17 +60,23 @@ public class FindPlaces extends AppCompatActivity {
 
         Toast.makeText(this, role, Toast.LENGTH_SHORT).show();
 
-        mLogoutButton = findViewById(R.id.logout);
-        mLogoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut();
-                startActivity(new Intent(FindPlaces.this, MainActivity.class));
-            }
-        });
+//        mLogoutButton = findViewById(R.id.logout);
+//        mLogoutButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mAuth.signOut();
+//                SharedPreferences sharedPref = FindPlaces.this.getSharedPreferences("status", Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedPref.edit();
+//                editor.putString("status", "loggedout");
+//                editor.apply();
+//                Log.d("SHAREDPREF", sharedPref.getString("status", "null"));
+//                startActivity(new Intent(FindPlaces.this, MainActivity.class));
+//                System.exit(0);
+//            }
+//        });
 
         mName = findViewById(R.id.username);
-        mName.setText(fName + " " + lName);
+        mName.setText("Welcome " + fName + " " + lName);
     }
 
     @Override

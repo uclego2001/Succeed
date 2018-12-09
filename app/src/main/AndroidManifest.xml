@@ -22,7 +22,6 @@
         <activity android:name=".Registration" />
         <activity android:name=".ChooseSubjects" />
         <activity android:name=".ChooseSchedule" />
-        <activity android:name=".ChooseRate"></activity>
     </application>
 
 </manifest>

@@ -21,12 +21,15 @@ AP Biology
 Chemistry
 AP Chemistry
 Physics
-AP Physics 1/2
+AP Physics 1
+AP Physics 2
 AP Physics C
-Geosystems
+Geosystems / Earth Science
 World History 1
 World History 2
 AP World History
 US History
 AP US History
 Ancient Civilizations
+AP Computer Science A
+AP Computer Science P

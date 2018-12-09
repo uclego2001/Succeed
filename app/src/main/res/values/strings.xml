@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Succeed</string>
+    <string name='status'>status</string>
 </resources>

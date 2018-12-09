@@ -423,15 +423,13 @@ public class ChooseSchedule extends AppCompatActivity {
         });
 
         mNext = findViewById(R.id.next_button);
-
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ChooseSchedule.this, selectedItems.toString(), Toast.LENGTH_SHORT).show();
                 if(check()) {
                     DatabaseReference currentDB = FirebaseDatabase.getInstance().getReference().child("Users").child(getIntent().getStringExtra("Role") + "s").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     currentDB.child("Schedule").setValue(new Gson().toJson(selectedItems));
-                    Intent intent = new Intent(ChooseSchedule.this, ChooseRate.class);
+                    Intent intent = new Intent(ChooseSchedule.this, FindPlaces.class);
                     intent.putExtra("Role", getIntent().getStringExtra("Role"));
                     intent.putExtra("First", getIntent().getStringExtra("First"));
                     intent.putExtra("Last", getIntent().getStringExtra("Last"));

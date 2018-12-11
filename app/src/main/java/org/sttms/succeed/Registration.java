@@ -5,6 +5,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,12 +38,11 @@ public class Registration extends AppCompatActivity {
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseUser user = mAuth.getCurrentUser();
                 if (user != null) {
+                    Log.d("TESTINGG", "inside");
                     Intent intent = new Intent(Registration.this, ChooseSubjects.class);
                     intent.putExtra("Role", name);
-                    intent.putExtra("First", getIntent().getStringExtra("First"));
-                    intent.putExtra("Last", getIntent().getStringExtra("Last"));
                     startActivity(intent);
                     finish();
                 }
@@ -93,6 +93,7 @@ public class Registration extends AppCompatActivity {
                                 lName.setValue(last);
                                 zipcode.setValue(zip);
                                 countryN.setValue(country);
+                                Log.d("TESTINGG", "registered");
                             }
                         }
                     });

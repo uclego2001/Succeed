@@ -47,14 +47,12 @@ public class FindPlaces extends AppCompatActivity {
         mName = findViewById(R.id.username);
 
         mAuth = FirebaseAuth.getInstance();
-
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
                 if(mAuth.getCurrentUser() != null) {
                     name = mAuth.getCurrentUser().getDisplayName();
                     mName.setText("Welcome " + name);
-                    Log.d("AUTHICC", mAuth.getCurrentUser().getDisplayName());
                 }
             }
         };
@@ -67,6 +65,12 @@ public class FindPlaces extends AppCompatActivity {
                     for (DataSnapshot d : dataSnapshot.getChildren()) {
                         if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
                             role = "Tutee";
+                            if(d.child("Subjects").getValue() == null){
+                                Intent intent = new Intent(FindPlaces.this, ChooseSubjects.class);
+                                intent.putExtra("Role", "Tutees");
+                                startActivity(intent);
+                                finish();
+                            }
                             break;
                         }
                     }
@@ -85,6 +89,13 @@ public class FindPlaces extends AppCompatActivity {
                     for (DataSnapshot d : dataSnapshot.getChildren()) {
                         if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
                             role = "Tutor";
+                            //Log.d("TESTINGG", d.child("Subjects").getValue().toString());
+                            if(d.child("Subjects").getValue() == null){
+                                Intent intent = new Intent(FindPlaces.this, ChooseSubjects.class);
+                                intent.putExtra("Role", "Tutors");
+                                startActivity(intent);
+                                finish();
+                            }
                             break;
                         }
                     }

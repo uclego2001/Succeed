@@ -3,6 +3,7 @@ package org.sttms.succeed;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,8 +33,8 @@ public class ChooseSubjects extends AppCompatActivity {
 
     public String[] getData() throws IOException{
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(this.getAssets().open("subjects.txt")));
-        String[] array = new String[32];
-        for(int x = 0; x < 32; x++){
+        String[] array = new String[35];
+        for(int x = 0; x < array.length; x++){
             array[x] = bufferedReader.readLine();
         }
         return array;
@@ -75,23 +76,24 @@ public class ChooseSubjects extends AppCompatActivity {
                 if(selectedItems.size() == 0){
                     Toast.makeText(ChooseSubjects.this, "You must select at least one subject.", Toast.LENGTH_SHORT).show();
                 } else {
-                    DatabaseReference currentDB = FirebaseDatabase.getInstance().getReference().child("Users").child(getIntent().getStringExtra("Role") + "s").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    DatabaseReference currentDB = FirebaseDatabase.getInstance().getReference().child("Users").child(getIntent().getStringExtra("Role")).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     Collections.sort(selectedItems);
                     currentDB.child("Subjects").setValue(selectedItems);
-                    Intent intent = new Intent(ChooseSubjects.this, ChooseSchedule.class);
-                    intent.putExtra("Role", getIntent().getStringExtra("Role"));
-                    intent.putExtra("First", getIntent().getStringExtra("First"));
-                    intent.putExtra("Last", getIntent().getStringExtra("Last"));
+                    Intent intent = new Intent(ChooseSubjects.this, FindPlaces.class);
+//                    intent.putExtra("Role", getIntent().getStringExtra("Role"));
+//                    intent.putExtra("First", getIntent().getStringExtra("First"));
+//                    intent.putExtra("Last", getIntent().getStringExtra("Last"));
                     startActivity(intent);
                 }
             }
         });
 
         mTextView = findViewById(R.id.instructions);
-        if(getIntent().getStringExtra("Role").equals("Tutor")) {
+        if(getIntent().getStringExtra("Role").equals("Tutors")) {
             mTextView.setText("Please select which subject(s) you would like to tutor.");
         } else {
             mTextView.setText("Please select which subject(s) you would like help for.");
         }
+        Log.d("TESTINGG", "done");
     }
 }

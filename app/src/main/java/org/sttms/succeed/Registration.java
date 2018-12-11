@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -79,6 +80,9 @@ public class Registration extends AppCompatActivity {
                                 Toast.makeText(Registration.this, "Error signing up", Toast.LENGTH_SHORT).show();
                             } else {
                                 String userId = mAuth.getCurrentUser().getUid();
+                                UserProfileChangeRequest.Builder changeRequest = new UserProfileChangeRequest.Builder();
+                                changeRequest.setDisplayName(first + " " + last);
+                                mAuth.getCurrentUser().updateProfile(changeRequest.build());
                                 DatabaseReference currentDB = FirebaseDatabase.getInstance().getReference().child("Users").child(name).child(userId);
                                 DatabaseReference fName = currentDB.child("First");
                                 DatabaseReference lName = currentDB.child("Last");

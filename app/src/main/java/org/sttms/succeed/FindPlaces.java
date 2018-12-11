@@ -24,26 +24,19 @@ public class FindPlaces extends AppCompatActivity {
     private Button mLogoutButton;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
-    private String role, fName, lName;
+    private String role, name;
     private TextView mName;
     private SharedPreferences prefs = null;
+    private DatabaseReference mReferenceTutors, mReferenceTutees;
 
     public void check() {
         if (prefs.getBoolean("firstrun", true)) {
-            Intent i = new Intent(FindPlaces.this, ChooseSubjects.class);
-            i.putExtra("Role", role);
-            i.putExtra("First", fName);
-            i.putExtra("Last", lName);
-            prefs.edit().putBoolean("firstrun", false).apply();
-            startActivity(i);
+            startActivity(new Intent(FindPlaces.this, ChooseSubjects.class));
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        role = getIntent().getStringExtra("Role");
-        fName = getIntent().getStringExtra("First");
-        lName = getIntent().getStringExtra("Last");
 
         prefs = getSharedPreferences("org.sttms.succeed", MODE_PRIVATE);
         check();
@@ -51,32 +44,66 @@ public class FindPlaces extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_places);
 
+        mName = findViewById(R.id.username);
+
         mAuth = FirebaseAuth.getInstance();
+
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                if(mAuth.getCurrentUser() != null) {
+                    name = mAuth.getCurrentUser().getDisplayName();
+                    mName.setText("Welcome " + name);
+                    Log.d("AUTHICC", mAuth.getCurrentUser().getDisplayName());
+                }
             }
         };
 
-        Toast.makeText(this, role, Toast.LENGTH_SHORT).show();
+        mReferenceTutees = FirebaseDatabase.getInstance().getReference("Users").child("Tutees");
+        mReferenceTutees.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (mAuth.getCurrentUser() != null) {
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
+                            role = "Tutee";
+                            break;
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
-//        mLogoutButton = findViewById(R.id.logout);
-//        mLogoutButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mAuth.signOut();
-//                SharedPreferences sharedPref = FindPlaces.this.getSharedPreferences("status", Context.MODE_PRIVATE);
-//                SharedPreferences.Editor editor = sharedPref.edit();
-//                editor.putString("status", "loggedout");
-//                editor.apply();
-//                Log.d("SHAREDPREF", sharedPref.getString("status", "null"));
-//                startActivity(new Intent(FindPlaces.this, MainActivity.class));
-//                System.exit(0);
-//            }
-//        });
+        mReferenceTutors = FirebaseDatabase.getInstance().getReference("Users").child("Tutors");
+        mReferenceTutors.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (mAuth.getCurrentUser() != null) {
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
+                            role = "Tutor";
+                            break;
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
-        mName = findViewById(R.id.username);
-        mName.setText("Welcome " + fName + " " + lName);
+        mLogoutButton = findViewById(R.id.logout);
+        mLogoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                startActivity(new Intent(FindPlaces.this, MainActivity.class));
+                finish();
+            }
+        });
     }
 
     @Override

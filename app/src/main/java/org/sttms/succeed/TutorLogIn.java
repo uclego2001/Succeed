@@ -18,8 +18,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class TutorLogIn extends AppCompatActivity {
 
@@ -28,8 +31,8 @@ public class TutorLogIn extends AppCompatActivity {
     private TextView registerButton;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
-//    private SharedPreferences sharedPreferences;
-//    private String status;
+    private Iterable<DataSnapshot> data;
+    private DatabaseReference mReferenceTutees;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,23 +41,33 @@ public class TutorLogIn extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        mReferenceTutees = FirebaseDatabase.getInstance().getReference("Users").child("Tutors");
+        mReferenceTutees.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (mAuth != null && mAuth.getCurrentUser() != null) {
+                    data = dataSnapshot.getChildren();
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
+                            startActivity(new Intent(TutorLogIn.this, FindPlaces.class));
+                            finish();
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                sharedPreferences = TutorLogIn.this.getSharedPreferences("status", Context.MODE_PRIVATE);
-//                status = sharedPreferences.getString("status", "null");
-//                Log.d("SHAREDPREF", status);
-//                if (status.equals("loggedin")) {
-//                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                    if (user != null) {
-//                        Intent intent = new Intent(TutorLogIn.this, FindPlaces.class);
-//                        intent.putExtra("Role", "Tutor");
-//                        intent.putExtra("First", getIntent().getStringExtra("First"));
-//                        intent.putExtra("Last", getIntent().getStringExtra("Last"));
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                }
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    startActivity(new Intent(TutorLogIn.this, FindPlaces.class));
+                    finish();
+                }
             }
         };
 
@@ -82,20 +95,18 @@ public class TutorLogIn extends AppCompatActivity {
                     mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(TutorLogIn.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(TutorLogIn.this, "Error logging in", Toast.LENGTH_SHORT).show();
-                            } else {
-//                              SharedPreferences sharedPref = getSharedPreferences("status", Context.MODE_PRIVATE);
-//                              SharedPreferences.Editor editor = sharedPref.edit();
-//                              editor.putString("status", "loggedin");
-//                              editor.apply();
-//                              Log.d("SHAREDPREF1", status);
-                                Intent intent = new Intent(TutorLogIn.this, FindPlaces.class);
-                                intent.putExtra("Role", "Tutor");
-                                intent.putExtra("First", task.getResult().getUser().getDisplayName());
-                                intent.putExtra("Last", "");
-                                startActivity(intent);
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(TutorLogIn.this, "Error logging in", Toast.LENGTH_SHORT).show();
+                        } else {
+                          if(data != null) {
+                                for (DataSnapshot d : data) {
+                                    if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
+                                        startActivity(new Intent(TutorLogIn.this, FindPlaces.class));
+                                        finish();
+                                    }
+                                }
                             }
+                        }
                         }
                     });
                 }

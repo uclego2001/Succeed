@@ -17,8 +17,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Iterator;
 
 public class TuteeLogIn extends AppCompatActivity {
 
@@ -27,33 +32,44 @@ public class TuteeLogIn extends AppCompatActivity {
     private TextView registerButton;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
-//    private SharedPreferences sharedPreferences;
-//    private String status;
-
+    private DatabaseReference mReferenceTutees;
+    private Iterable<DataSnapshot> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutee_log_in);
 
-//        sharedPreferences = this.getSharedPreferences("status", Context.MODE_PRIVATE);
-//        status = sharedPreferences.getString("status", "null");
-
         mAuth = FirebaseAuth.getInstance();
+
+        mReferenceTutees = FirebaseDatabase.getInstance().getReference("Users").child("Tutees");
+        mReferenceTutees.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (mAuth != null && mAuth.getCurrentUser() != null) {
+                    data = dataSnapshot.getChildren();
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
+                            startActivity(new Intent(TuteeLogIn.this, FindPlaces.class));
+                            finish();
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                if (status.equals("loggedin")) {
-//                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                    if (user != null) {
-//                        Intent intent = new Intent(TuteeLogIn.this, FindPlaces.class);
-//                        intent.putExtra("Role", "Tutee");
-//                        intent.putExtra("First", getIntent().getStringExtra("First"));
-//                        intent.putExtra("Last", getIntent().getStringExtra("Last"));
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                }
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    startActivity(new Intent(TuteeLogIn.this, FindPlaces.class));
+                    finish();
+                }
             }
         };
 
@@ -84,15 +100,14 @@ public class TuteeLogIn extends AppCompatActivity {
                             if (!task.isSuccessful()) {
                                 Toast.makeText(TuteeLogIn.this, "Error logging in", Toast.LENGTH_SHORT).show();
                             } else {
-//                              SharedPreferences sharedPref = getSharedPreferences("status", Context.MODE_PRIVATE);
-//                              SharedPreferences.Editor editor = sharedPref.edit();
-//                              editor.putString("status", "loggedout");
-//                              editor.apply();
-                                Intent intent = new Intent(TuteeLogIn.this, FindPlaces.class);
-                                intent.putExtra("Role", "Tutee");
-                                intent.putExtra("First", task.getResult().getUser().getDisplayName());
-                                intent.putExtra("Last", "");
-                                startActivity(intent);
+                                if(data != null) {
+                                    for (DataSnapshot d : data) {
+                                        if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
+                                            startActivity(new Intent(TuteeLogIn.this, FindPlaces.class));
+                                            finish();
+                                        }
+                                    }
+                                }
                             }
                         }
                     });

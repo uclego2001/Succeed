@@ -18,11 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 public class ChooseSubjects extends AppCompatActivity {
 
@@ -30,6 +28,7 @@ public class ChooseSubjects extends AppCompatActivity {
     private ArrayList<String> selectedItems = new ArrayList<>();
     private Button mButton;
     private TextView mTextView;
+    private String role;
 
     public String[] getData() throws IOException{
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(this.getAssets().open("subjects.txt")));
@@ -44,6 +43,8 @@ public class ChooseSubjects extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_subjects);
+
+        role = getIntent().getStringExtra("Role");
 
         mListView = findViewById(R.id.checkable_list);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -76,20 +77,20 @@ public class ChooseSubjects extends AppCompatActivity {
                 if(selectedItems.size() == 0){
                     Toast.makeText(ChooseSubjects.this, "You must select at least one subject.", Toast.LENGTH_SHORT).show();
                 } else {
-                    DatabaseReference currentDB = FirebaseDatabase.getInstance().getReference().child("Users").child(getIntent().getStringExtra("Role")).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    DatabaseReference currentDB = FirebaseDatabase.getInstance().getReference().child("Users").child(role).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     Collections.sort(selectedItems);
                     currentDB.child("Subjects").setValue(selectedItems);
-                    Intent intent = new Intent(ChooseSubjects.this, FindPlaces.class);
-//                    intent.putExtra("Role", getIntent().getStringExtra("Role"));
-//                    intent.putExtra("First", getIntent().getStringExtra("First"));
-//                    intent.putExtra("Last", getIntent().getStringExtra("Last"));
-                    startActivity(intent);
+                    if(role.equals("Tutors")) {
+                        startActivity(new Intent(ChooseSubjects.this, FindPlaces_Tutor.class));
+                    } else {
+                        startActivity(new Intent(ChooseSubjects.this, FindPlaces_Tutee.class));
+                    }
                 }
             }
         });
 
         mTextView = findViewById(R.id.instructions);
-        if(getIntent().getStringExtra("Role").equals("Tutors")) {
+        if(role.equals("Tutors")) {
             mTextView.setText("Please select which subject(s) you would like to tutor.");
         } else {
             mTextView.setText("Please select which subject(s) you would like help for.");

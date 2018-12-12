@@ -1,8 +1,6 @@
 package org.sttms.succeed;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +12,6 @@ import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -429,7 +426,7 @@ public class ChooseSchedule extends AppCompatActivity {
                 if(check()) {
                     DatabaseReference currentDB = FirebaseDatabase.getInstance().getReference().child("Users").child(getIntent().getStringExtra("Role") + "s").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     currentDB.child("Schedule").setValue(new Gson().toJson(selectedItems));
-                    Intent intent = new Intent(ChooseSchedule.this, FindPlaces.class);
+                    Intent intent = new Intent(ChooseSchedule.this, FindPlaces_Tutor.class);
                     intent.putExtra("Role", getIntent().getStringExtra("Role"));
                     intent.putExtra("First", getIntent().getStringExtra("First"));
                     intent.putExtra("Last", getIntent().getStringExtra("Last"));

@@ -1,12 +1,9 @@
 package org.sttms.succeed;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,7 +46,7 @@ public class TutorLogIn extends AppCompatActivity {
                     data = dataSnapshot.getChildren();
                     for (DataSnapshot d : dataSnapshot.getChildren()) {
                         if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
-                            startActivity(new Intent(TutorLogIn.this, FindPlaces.class));
+                            startActivity(new Intent(TutorLogIn.this, FindPlaces_Tutor.class));
                             finish();
                         }
                     }
@@ -65,7 +62,7 @@ public class TutorLogIn extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
-                    startActivity(new Intent(TutorLogIn.this, FindPlaces.class));
+                    startActivity(new Intent(TutorLogIn.this, FindPlaces_Tutor.class));
                     finish();
                 }
             }
@@ -101,7 +98,7 @@ public class TutorLogIn extends AppCompatActivity {
                           if(data != null) {
                                 for (DataSnapshot d : data) {
                                     if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
-                                        startActivity(new Intent(TutorLogIn.this, FindPlaces.class));
+                                        startActivity(new Intent(TutorLogIn.this, FindPlaces_Tutor.class));
                                         finish();
                                     }
                                 }

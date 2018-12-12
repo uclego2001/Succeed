@@ -1,16 +1,13 @@
 package org.sttms.succeed;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -19,7 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class FindPlaces extends AppCompatActivity {
+public class FindPlaces_Tutor extends AppCompatActivity {
 
     private Button mLogoutButton;
     private FirebaseAuth mAuth;
@@ -28,10 +25,11 @@ public class FindPlaces extends AppCompatActivity {
     private TextView mName;
     private SharedPreferences prefs = null;
     private DatabaseReference mReferenceTutors, mReferenceTutees;
+    private Iterable<DataSnapshot> data;
 
     public void check() {
         if (prefs.getBoolean("firstrun", true)) {
-            startActivity(new Intent(FindPlaces.this, ChooseSubjects.class));
+            startActivity(new Intent(FindPlaces_Tutor.this, ChooseSubjects.class));
         }
     }
 
@@ -42,7 +40,9 @@ public class FindPlaces extends AppCompatActivity {
         check();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_find_places);
+        setContentView(R.layout.activity_find_places_tutor);
+
+        role = "Tutor";
 
         mName = findViewById(R.id.username);
 
@@ -62,18 +62,7 @@ public class FindPlaces extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (mAuth.getCurrentUser() != null) {
-                    for (DataSnapshot d : dataSnapshot.getChildren()) {
-                        if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
-                            role = "Tutee";
-                            if(d.child("Subjects").getValue() == null){
-                                Intent intent = new Intent(FindPlaces.this, ChooseSubjects.class);
-                                intent.putExtra("Role", "Tutees");
-                                startActivity(intent);
-                                finish();
-                            }
-                            break;
-                        }
-                    }
+                    data = dataSnapshot.getChildren();
                 }
             }
             @Override
@@ -88,10 +77,8 @@ public class FindPlaces extends AppCompatActivity {
                 if (mAuth.getCurrentUser() != null) {
                     for (DataSnapshot d : dataSnapshot.getChildren()) {
                         if (d.getKey().equals(mAuth.getCurrentUser().getUid())) {
-                            role = "Tutor";
-                            //Log.d("TESTINGG", d.child("Subjects").getValue().toString());
                             if(d.child("Subjects").getValue() == null){
-                                Intent intent = new Intent(FindPlaces.this, ChooseSubjects.class);
+                                Intent intent = new Intent(FindPlaces_Tutor.this, ChooseSubjects.class);
                                 intent.putExtra("Role", "Tutors");
                                 startActivity(intent);
                                 finish();
@@ -106,12 +93,14 @@ public class FindPlaces extends AppCompatActivity {
             }
         });
 
+
+
         mLogoutButton = findViewById(R.id.logout);
         mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAuth.signOut();
-                startActivity(new Intent(FindPlaces.this, MainActivity.class));
+                startActivity(new Intent(FindPlaces_Tutor.this, MainActivity.class));
                 finish();
             }
         });
